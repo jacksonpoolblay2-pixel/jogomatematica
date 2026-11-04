@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defesa da Muralha - Cyber Tower Defense (PA & PG)</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Fonte temática de jogos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <!-- BARRA SUPERIOR DE HUD / ESTATÍSTICAS -->
+        <header id="hud-top">
+            <div class="stat-box">
+                <span class="stat-label">RECURSOS (MOEDAS)</span>
+                <span id="gold-display" class="stat-value gold">🪙 150</span>
+            </div>
+            
+            <div class="stat-box">
+                <span class="stat-label">INTEGRIDADE DA MURALHA</span>
+                <div class="health-bar-container">
+                    <div id="wall-health-bar" class="health-bar-fill"></div>
+                </div>
+                <span id="wall-health-text" class="stat-value text-small">1000 / 1000 HP</span>
+            </div>
+
+            <div class="stat-box">
+                <span class="stat-label">ONDA ATUAL (PA)</span>
+                <span id="wave-display" class="stat-value wave">ONDA 1</span>
+                <span id="wave-formula" class="math-subtext">a<sub>n</sub> = 5 + (n-1)×3</span>
+            </div>
+
+            <div class="stat-box">
+                <span class="stat-label">INIMIGOS NA ONDA</span>
+                <span id="enemies-left" class="stat-value enemies">0 / 0</span>
+            </div>
+
+            <button id="start-wave-btn" class="btn btn-primary btn-glow">
+                ▶ INICIAR ONDA (PA)
+            </button>
+        </header>
+
+        <!-- ÁREA PRINCIPAL DO JOGO (CANVAS E PAINEL) -->
+        <main id="main-content">
+            <!-- CANVAS ONDE O JOGO É DESENHADO -->
+            <div id="canvas-wrapper">
+                <canvas id="gameCanvas" width="960" height="600"></canvas>
+                
+                <!-- PAINEL FLUTUANTE DE SELEÇÃO/UPGRADE DE TORRE -->
+                <div id="tower-inspector" class="inspector-panel hidden">
+                    <div class="inspector-header">
+                        <h3 id="inspector-title">Torre Selecionada</h3>
+                        <button id="close-inspector-btn" class="close-btn">✖</button>
+                    </div>
+                    <div class="inspector-body">
+                        <p id="inspector-level">Nível: 1</p>
+                        <p id="inspector-damage">Dano: 25</p>
+                        <p id="inspector-range">Alcance: 120px</p>
+                        <p id="inspector-fire-rate">Cadência: 1.0s</p>
+                        
+                        <div class="upgrade-box">
+                            <span class="math-tag">Fórmula PG: Custo = Base × q<sup>Nível-1</sup></span>
+                            <button id="upgrade-tower-btn" class="btn btn-success">
+                                ⚡ EVOLUIR (PG) - <span id="upgrade-cost">50</span> 🪙
+                            </button>
+                        </div>
+                        
+                        <button id="sell-tower-btn" class="btn btn-danger">
+                            🗑 VENDER (+<span id="sell-value">0</span> 🪙)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAINEL LATERAL DE SELEÇÃO E CONSTRUÇÃO -->
+            <aside id="sidebar">
+                <h2>📐 TORRES DE DEFESA</h2>
+                <p class="sidebar-subtitle">Fórmula de Custo (PG): <code>Custo = Base × 1.6<sup>Nível-1</sup></code></p>
+                
+                <div class="tower-selector">
+                    <!-- TORRE 1: CANHÃO -->
+                    <div class="tower-card selected" data-type="cannon">
+                        <div class="tower-icon cannon-icon"></div>
+                        <div class="tower-info">
+                            <h4>Torre Canhão</h4>
+                            <p class="tower-desc">Dano equilibrado e alcance médio.</p>
+                            <span class="tower-cost">Custo: 50 🪙</span>
+                        </div>
+                    </div>
+
+                    <!-- TORRE 2: LASER -->
+                    <div class="tower-card" data-type="laser">
+                        <div class="tower-icon laser-icon"></div>
+                        <div class="tower-info">
+                            <h4>Torre Laser</h4>
+                            <p class="tower-desc">Tiro rápido, ótimo para robôs ágeis.</p>
+                            <span class="tower-cost">Custo: 80 🪙</span>
+                        </div>
+                    </div>
+
+                    <!-- TORRE 3: MISSEIS -->
+                    <div class="tower-card" data-type="missile">
+                        <div class="tower-icon missile-icon"></div>
+                        <div class="tower-info">
+                            <h4>Torre Míssil</h4>
+                            <p class="tower-desc">Alto dano com impacto em área.</p>
+                            <span class="tower-cost">Custo: 130 🪙</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXPLICAÇÃO MATEMÁTICA PARA APRESENTAÇÃO -->
+                <div id="math-explanation">
+                    <h3>📊 MATEMÁTICA NO JOGO</h3>
+                    <div class="math-card">
+                        <h4>1. Progressão Aritmética (PA)</h4>
+                        <p><strong>Robôs por Onda:</strong></p>
+                        <code>a<sub>n</sub> = a<sub>1</sub> + (n - 1) × r</code>
+                        <p>a<sub>1</sub> = 5 (onda 1) | r = 3 (robôs a mais por onda)</p>
+                    </div>
+                    <div class="math-card">
+                        <h4>2. Progressão Geométrica (PG)</h4>
+                        <p><strong>Custo de Evolução da Torre:</strong></p>
+                        <code>a<sub>n</sub> = a<sub>1</sub> × q<sup>(n - 1)</sup></code>
+                        <p>a<sub>1</sub> = Custo Base | q = 1.6 (razão de multiplicador)</p>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
