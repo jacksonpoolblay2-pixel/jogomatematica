@@ -1,0 +1,340 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    background-color: #0b0e14;
+    color: #e0e6ed;
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+#game-container {
+    width: 1280px;
+    max-width: 98vw;
+    background: #121824;
+    border: 2px solid #2a364f;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 230, 255, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- HUD SUPERIOR --- */
+#hud-top {
+    background: linear-gradient(180deg, #1a233a 0%, #111726 100%);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #2a364f;
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    color: #8a99ad;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.stat-value.gold { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4); }
+.stat-value.wave { color: #00e6ff; text-shadow: 0 0 10px rgba(0, 230, 255, 0.4); }
+.stat-value.enemies { color: #ff4757; }
+.text-small { font-size: 13px; color: #ffffff; }
+
+.math-subtext {
+    font-size: 11px;
+    color: #70a1ff;
+    font-family: monospace;
+}
+
+.health-bar-container {
+    width: 160px;
+    height: 14px;
+    background: #2f3542;
+    border-radius: 7px;
+    overflow: hidden;
+    border: 1px solid #57606f;
+    margin-bottom: 2px;
+}
+
+.health-bar-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff4757 0%, #2ed573 100%);
+    transition: width 0.3s ease;
+}
+
+/* BOTÕES DE AÇÃO */
+.btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+    color: #fff;
+    border: 1px solid #00d2ff;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 198, 255, 0.5);
+}
+
+.btn-glow {
+    animation: pulseGlow 2s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 5px #00c6ff; }
+    100% { box-shadow: 0 0 20px #00c6ff, 0 0 30px #00c6ff; }
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #2ed573 0%, #26af5f 100%);
+    color: white;
+    width: 100%;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+    color: white;
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* --- CONTEÚDO PRINCIPAL --- */
+#main-content {
+    display: flex;
+    flex-direction: row;
+    padding: 15px;
+    gap: 15px;
+    background: #0d121d;
+}
+
+#canvas-wrapper {
+    position: relative;
+    width: 960px;
+    height: 600px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+    border: 2px solid #1e293b;
+}
+
+canvas {
+    display: block;
+    background: #141e28;
+}
+
+/* --- PAINEL INSPETOR DE TORRE FLUTUANTE --- */
+.inspector-panel {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 240px;
+    background: rgba(18, 24, 36, 0.95);
+    border: 2px solid #00e6ff;
+    border-radius: 8px;
+    padding: 12px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+    z-index: 10;
+}
+
+.hidden { display: none !important; }
+
+.inspector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #2a364f;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+.inspector-header h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    color: #00e6ff;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #ff4757;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.inspector-body p {
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #ced6e0;
+}
+
+.upgrade-box {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed #2a364f;
+}
+
+.math-tag {
+    display: block;
+    font-size: 10px;
+    color: #70a1ff;
+    margin-bottom: 6px;
+    text-align: center;
+}
+
+/* --- BARRA LATERAL (SIDEBAR) --- */
+#sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#sidebar h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    color: #00e6ff;
+    letter-spacing: 1px;
+}
+
+.sidebar-subtitle {
+    font-size: 12px;
+    color: #a4b0be;
+    margin-top: -10px;
+}
+
+.tower-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tower-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: #1a2332;
+    border: 2px solid #2c3e50;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tower-card:hover {
+    border-color: #00e6ff;
+    background: #222f44;
+}
+
+.tower-card.selected {
+    border-color: #00e6ff;
+    background: #25354e;
+    box-shadow: 0 0 10px rgba(0, 230, 255, 0.3);
+}
+
+.tower-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+.cannon-icon { background: #3498db; }
+.laser-icon { background: #e74c3c; }
+.missile-icon { background: #f1c40f; }
+
+.tower-info h4 {
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.tower-desc {
+    font-size: 11px;
+    color: #8a99ad;
+}
+
+.tower-cost {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffd700;
+}
+
+/* EXPLICAÇÃO MATEMÁTICA DA APRESENTAÇÃO */
+#math-explanation {
+    margin-top: auto;
+    background: #151d2a;
+    border: 1px solid #2a364f;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+#math-explanation h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    color: #2ed573;
+    margin-bottom: 8px;
+}
+
+.math-card {
+    background: #0f1522;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    border-left: 3px solid #00e6ff;
+}
+
+.math-card h4 {
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.math-card p {
+    font-size: 11px;
+    color: #a4b0be;
+}
+
+.math-card code {
+    display: block;
+    font-family: monospace;
+    font-size: 12px;
+    color: #70a1ff;
+    margin: 3px 0;
+}
